@@ -5,8 +5,7 @@ def create_app():
     app = Flask(__name__)
 
     @app.route('/', methods=['POST'])
-    @app.route('/<string:task_url>', methods=['POST'])
-    def create_task(task_url=None):
+    def create_task():
         return 'Mock for creating task'
 
     @app.route('/')
