@@ -28,7 +28,7 @@ def create_app():
         return result.id
 
     @app.route('/')
-    @app.route('/<int:task_id>')
+    @app.route('/<str:task_id>')
     def check_task_status(task_id=None):
         return 'Mock for check status'
 
