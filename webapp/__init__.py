@@ -21,12 +21,12 @@ def create_app():
             get_html.raise_for_status()
         except (requests.exceptions.MissingSchema,
                 requests.exceptions.InvalidSchema):
-            return 'Not valid url'
+            return jsonify(status='Not valid url')
         except requests.exceptions.ConnectionError:
-            return "Can't connect to url", 500
+            return jsonify("Can't connect to url"), 500
 
         result = create_parse_task.delay(get_html.text)
-        return result.id
+        return jsonify(url=url_for('check_task_status', task_id=result.id))
 
     @app.route('/')
     @app.route('/<string:task_id>')
