@@ -5,6 +5,17 @@ from bs4 import BeautifulSoup
 DIR_NAME = 'task_result'
 
 
+def key_in_list(k, m):
+    return bool([True for i in m if k in i.values()])
+
+
+def check_task(task_id_find, task_value_dict):
+    for task_list in task_value_dict:
+        if key_in_list(task_id_find, task_list):
+            return True
+    return False
+
+
 # Creating directory for .zip
 def create_main_directory():
     basedir = os.getcwd()

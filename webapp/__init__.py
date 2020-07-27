@@ -1,7 +1,8 @@
+import os
 import requests
-from flask import Flask, request
+from flask import Flask, request, jsonify, url_for, send_file
 from .extensions import celery_app
-from .utils import create_main_directory
+from .utils import create_main_directory, check_task, DIR_NAME
 from webapp.tasks import create_parse_task
 
 
@@ -28,9 +29,30 @@ def create_app():
         return result.id
 
     @app.route('/')
-    @app.route('/<str:task_id>')
+    @app.route('/<string:task_id>')
     def check_task_status(task_id=None):
-        return 'Mock for check status'
+        if not task_id:
+            return jsonify(status='No data')
+
+        task_value_dict = celery_app.control.inspect().active().values()
+        result = check_task(task_id, task_value_dict)
+        path_to_file = os.path.join(DIR_NAME, f'{task_id}.zip')
+
+        if os.path.exists(path_to_file):
+            return jsonify(status='Ready', url=url_for('send_zip', file_name=task_id))
+        elif result:
+            return jsonify(status='In progress')
+
+        return jsonify(status='Not found'), 404
+
+    @app.route('/download/<string:file_name>')
+    def send_zip(file_name):
+        path_to_file = os.path.join(DIR_NAME, f'{file_name}.zip')
+
+        if os.path.exists(path_to_file):
+            return send_file(os.path.abspath(path_to_file), as_attachment=True)
+
+        return jsonify(status='No file exists'), 404
 
     return app
 
