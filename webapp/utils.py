@@ -26,7 +26,7 @@ def create_main_directory():
         return 'Directory already exists'
 
 
-# We start to find all hrefs on page
+# We start to find unique tags on page
 def parse_text(text):
     data = []
     soup = BeautifulSoup(text, 'lxml')
